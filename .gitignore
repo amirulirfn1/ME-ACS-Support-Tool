@@ -1,0 +1,19 @@
+# Build output
+bin/
+obj/
+Release/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
