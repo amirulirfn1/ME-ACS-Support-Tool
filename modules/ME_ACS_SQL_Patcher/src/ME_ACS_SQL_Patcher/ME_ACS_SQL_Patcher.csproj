@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <BuildTimestamp>$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))</BuildTimestamp>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <AssemblyName>ME_ACS_SQL_Patcher</AssemblyName>
+    <AssemblyTitle>ME_ACS SQL Patcher</AssemblyTitle>
+    <Title>ME_ACS SQL Patcher</Title>
+    <Description>Portable support tool for patching MagEtegra database backups.</Description>
+    <FileDescription>ME_ACS SQL Patcher portable support tool</FileDescription>
+    <Version>$(ToolkitVersion)</Version>
+    <FileVersion>$(ToolkitFileVersion)</FileVersion>
+    <AssemblyVersion>$(ToolkitFileVersion)</AssemblyVersion>
+    <InformationalVersion>$(ToolkitVersion)</InformationalVersion>
+    <Product>ME_ACS SQL Patcher</Product>
+    <Company>Magnet Security</Company>
+    <ApplicationIcon>Assets\me-acs-patcher.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <NeutralLanguage>en</NeutralLanguage>
+    <StartupObject>MagDbPatcher.Program</StartupObject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <PackageReference Include="System.Text.Json" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(BuildTimestamp)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <Target Name="WriteBuildDate" AfterTargets="Publish">
+    <WriteLinesToFile File="$(PublishDir)build-date.txt" Lines="$(BuildTimestamp)" Overwrite="true" />
+  </Target>
+
+  <ItemGroup>
+    <Resource Include="Assets\me-acs-patcher.ico" />
+    <Resource Include="Assets\me-acs-patcher.png" />
+    <None Include="..\patches\**\*.*" Link="patches\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

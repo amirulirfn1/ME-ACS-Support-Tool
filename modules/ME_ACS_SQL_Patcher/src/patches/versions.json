@@ -1,0 +1,757 @@
+{
+  "versions": [
+    {
+      "id": "1.4",
+      "name": "1.4",
+      "upgradesTo": "2.10",
+      "order": 1
+    },
+    {
+      "id": "1.6",
+      "name": "1.6",
+      "upgradesTo": "2.00",
+      "order": 2
+    },
+    {
+      "id": "1.90",
+      "name": "1.90",
+      "upgradesTo": null,
+      "order": 3
+    },
+    {
+      "id": "2.00",
+      "name": "2.00",
+      "upgradesTo": null,
+      "order": 4
+    },
+    {
+      "id": "2.1",
+      "name": "2.1",
+      "upgradesTo": "3.10",
+      "order": 5
+    },
+    {
+      "id": "2.10",
+      "name": "2.10",
+      "upgradesTo": "4.00",
+      "order": 6
+    },
+    {
+      "id": "3.04",
+      "name": "3.04",
+      "upgradesTo": null,
+      "order": 7
+    },
+    {
+      "id": "3.10",
+      "name": "3.10",
+      "upgradesTo": null,
+      "order": 8
+    },
+    {
+      "id": "4.00",
+      "name": "4.00",
+      "upgradesTo": "4.08",
+      "order": 9
+    },
+    {
+      "id": "4.08",
+      "name": "4.08",
+      "upgradesTo": "4.10",
+      "order": 10
+    },
+    {
+      "id": "4.10",
+      "name": "4.10",
+      "upgradesTo": "4.20",
+      "order": 11
+    },
+    {
+      "id": "4.20",
+      "name": "4.20",
+      "upgradesTo": "4.22",
+      "order": 12
+    },
+    {
+      "id": "4.22",
+      "name": "4.22",
+      "upgradesTo": "4.30",
+      "order": 13
+    },
+    {
+      "id": "4.30",
+      "name": "4.30",
+      "upgradesTo": "4.40",
+      "order": 14
+    },
+    {
+      "id": "4.40",
+      "name": "4.40",
+      "upgradesTo": "4.52",
+      "order": 15
+    },
+    {
+      "id": "4.52",
+      "name": "4.52",
+      "upgradesTo": "4.62",
+      "order": 16
+    },
+    {
+      "id": "4.62",
+      "name": "4.62",
+      "upgradesTo": "4.70",
+      "order": 17
+    },
+    {
+      "id": "4.70",
+      "name": "4.70",
+      "upgradesTo": "4.80",
+      "order": 18
+    },
+    {
+      "id": "4.80",
+      "name": "4.80",
+      "upgradesTo": "4.81",
+      "order": 19
+    },
+    {
+      "id": "4.81",
+      "name": "4.81",
+      "upgradesTo": "4.91",
+      "order": 20
+    },
+    {
+      "id": "4.91",
+      "name": "4.91",
+      "upgradesTo": "4.92",
+      "order": 21
+    },
+    {
+      "id": "4.92",
+      "name": "4.92",
+      "upgradesTo": "4.93",
+      "order": 22
+    },
+    {
+      "id": "4.93",
+      "name": "4.93",
+      "upgradesTo": "5.2.1",
+      "order": 23
+    },
+    {
+      "id": "5.2.1",
+      "name": "5.2.1",
+      "upgradesTo": "5.3.2",
+      "order": 24
+    },
+    {
+      "id": "5.3.2",
+      "name": "5.3.2",
+      "upgradesTo": "5.3.3",
+      "order": 25
+    },
+    {
+      "id": "5.3.3",
+      "name": "5.3.3",
+      "upgradesTo": "6.0",
+      "order": 26
+    },
+    {
+      "id": "6.0",
+      "name": "6.0",
+      "upgradesTo": "6.1",
+      "order": 27
+    },
+    {
+      "id": "6.1",
+      "name": "6.1",
+      "upgradesTo": "6.2",
+      "order": 28
+    },
+    {
+      "id": "6.2",
+      "name": "6.2",
+      "upgradesTo": "6.3",
+      "order": 29
+    },
+    {
+      "id": "6.3",
+      "name": "6.3",
+      "upgradesTo": "6.5",
+      "order": 30
+    },
+    {
+      "id": "6.5",
+      "name": "6.5",
+      "upgradesTo": "7.0",
+      "order": 31
+    },
+    {
+      "id": "7.0",
+      "name": "7.0",
+      "upgradesTo": "7.2",
+      "order": 32
+    },
+    {
+      "id": "7.2",
+      "name": "7.2",
+      "upgradesTo": "7.2.1",
+      "order": 33
+    },
+    {
+      "id": "7.2.1",
+      "name": "7.2.1",
+      "upgradesTo": "7.2.3-20251117",
+      "order": 34
+    },
+    {
+      "id": "7.2.3-20251117",
+      "name": "7.2.3 (17 Nov 2025)",
+      "upgradesTo": "7.2.3-20251205",
+      "order": 35
+    },
+    {
+      "id": "7.2.3-20251205",
+      "name": "7.2.3 (5 Dec 2025)",
+      "upgradesTo": "7.2.3-20251231",
+      "order": 36
+    },
+    {
+      "id": "7.2.3-20251231",
+      "name": "7.2.3 (31 Dec 2025)",
+      "upgradesTo": "7.2.3-20260123",
+      "order": 37
+    },
+    {
+      "id": "7.2.3-20260123",
+      "name": "7.2.3 (23 Jan 2026)",
+      "upgradesTo": "7.2.4",
+      "order": 38
+    },
+    {
+      "id": "7.2.4",
+      "name": "7.2.4 (Latest)",
+      "upgradesTo": null,
+      "order": 39
+    }
+  ],
+  "patches": [
+    {
+      "from": "1.6",
+      "to": "1.90",
+      "scripts": [
+        "1.90/SQL_1_90fm1_6.sql"
+      ]
+    },
+    {
+      "from": "1.6",
+      "to": "2.00",
+      "scripts": [
+        "2.00/SQL_2_0_0fm1_6.sql",
+        "2.00/SQL_DataG_1_9_0.sql",
+        "2.00/SQL_2_0_0LanEMI.sql"
+      ]
+    },
+    {
+      "from": "1.4",
+      "to": "2.10",
+      "scripts": [
+        "2.10/1SQL_2_10fm1_4.sql",
+        "2.10/2SQL_DataG_2_1_0.sql",
+        "2.10/3SQL_2_1_0LanEMI.sql"
+      ]
+    },
+    {
+      "from": "2.1",
+      "to": "3.04",
+      "scripts": [
+        "3.04/SQL3_04fm2_1.sql",
+        "3.04/SQL_3_04LanEMI.sql"
+      ]
+    },
+    {
+      "from": "2.1",
+      "to": "3.10",
+      "scripts": [
+        "3.10/SQL3_10fm2_1.sql",
+        "3.10/SQL_2_10fm1_4.sql",
+        "3.10/SQL_3_10LanEMI.sql"
+      ]
+    },
+    {
+      "from": "2.10",
+      "to": "4.00",
+      "scripts": [
+        "4.00/SQL_Upgrade4_00from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.00",
+      "to": "4.08",
+      "scripts": [
+        "4.08/SQL_Upgrade4_08from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.08",
+      "to": "4.10",
+      "scripts": [
+        "4.10/SQL_Upgrade4_10from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.10",
+      "to": "4.20",
+      "scripts": [
+        "4.20/SQL_Upgrade4_20from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.20",
+      "to": "4.22",
+      "scripts": [
+        "4.22/SQL_Upgrade4_22from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.22",
+      "to": "4.30",
+      "scripts": [
+        "4.30/SQL_Upgrade4_30from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.30",
+      "to": "4.40",
+      "scripts": [
+        "4.40/SQL_Upgrade4_40from2_10.sql"
+      ]
+    },
+    {
+      "from": "4.40",
+      "to": "4.52",
+      "scripts": [
+        "4.52/SQL_Upgrade4_52from4_40.sql"
+      ]
+    },
+    {
+      "from": "4.52",
+      "to": "4.62",
+      "scripts": [
+        "4.62/SQL_Upgrade4_62from4_40.sql"
+      ]
+    },
+    {
+      "from": "4.62",
+      "to": "4.70",
+      "scripts": [
+        "4.70/SQL_Upgrade4_70.sql"
+      ]
+    },
+    {
+      "from": "4.70",
+      "to": "4.80",
+      "scripts": [
+        "4.80/Upgrade4_80.sql",
+        "4.80/soyalpicture.sql"
+      ]
+    },
+    {
+      "from": "4.80",
+      "to": "4.81",
+      "scripts": [
+        "4.81/4_8_1_SoyalEtegra_Update.sql",
+        "4.81/4_8_1_SoyalPicture.sql",
+        "4.81/Delete_CardIndex.sql"
+      ]
+    },
+    {
+      "from": "4.81",
+      "to": "4.91",
+      "scripts": [
+        "4.91/SQL_Upgrade4_91.sql"
+      ]
+    },
+    {
+      "from": "4.91",
+      "to": "4.92",
+      "scripts": [
+        "4.92/update_script.sql"
+      ]
+    },
+    {
+      "from": "4.92",
+      "to": "4.93",
+      "scripts": [
+        "4.93/4_9_3_Add_327_727_V5.sql",
+        "4.93/AddMissingABAForImportUser.sql"
+      ]
+    },
+    {
+      "from": "4.93",
+      "to": "5.2.1",
+      "scripts": [
+        "5.2.1/Upgrade5_2_1.sql"
+      ]
+    },
+    {
+      "from": "5.2.1",
+      "to": "5.3.2",
+      "scripts": [
+        "5.3.2/Update_5_3_2.sql"
+      ]
+    },
+    {
+      "from": "5.3.2",
+      "to": "5.3.3",
+      "scripts": [
+        "5.3.3/Update_5_3_2.sql",
+        "5.3.3/Update_5_3_2yearlyshift.sql",
+        "5.3.3/Update_5_3_3_20181016.sql"
+      ]
+    },
+    {
+      "from": "5.3.3",
+      "to": "6.0",
+      "scripts": [
+        "6.0/Update_MagEtegra_6_0_ from_5_3_3.sql"
+      ]
+    },
+    {
+      "from": "6.0",
+      "to": "6.1",
+      "scripts": [
+        "6.1/Script_6_1_Final.sql"
+      ]
+    },
+    {
+      "from": "6.1",
+      "to": "6.2",
+      "scripts": [
+        "6.2/6_2_20210324_1349.sql"
+      ]
+    },
+    {
+      "from": "6.2",
+      "to": "6.3",
+      "scripts": [
+        "6.3/6_3_0_Final.sql"
+      ]
+    },
+    {
+      "from": "6.3",
+      "to": "6.5",
+      "scripts": [
+        "6.5/6_4_0_20220419.sql",
+        "6.5/MagEtegra_6_X_20230112.sql"
+      ]
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.3-20251117",
+      "scripts": [
+        "7.2.3-20251117/7_2_3_patch.sql",
+        "7.2.3-20251117/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.3-20251205",
+      "scripts": [
+        "7.2.3-20251205/7_2_3_patch.sql",
+        "7.2.3-20251205/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_patch.sql",
+        "7.2.3-20251231/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_patch.sql",
+        "7.2.3-20260123/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.3-20251117",
+      "scripts": [
+        "7.2.3-20251117/7_2_3_patch.sql",
+        "7.2.3-20251117/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.3-20251205",
+      "scripts": [
+        "7.2.3-20251205/7_2_3_patch.sql",
+        "7.2.3-20251205/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_patch.sql",
+        "7.2.3-20251231/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_patch.sql",
+        "7.2.3-20260123/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.3-20251117",
+      "scripts": [
+        "7.2.3-20251117/7_2_3_patch.sql",
+        "7.2.3-20251117/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.3-20251205",
+      "scripts": [
+        "7.2.3-20251205/7_2_3_patch.sql",
+        "7.2.3-20251205/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_patch.sql",
+        "7.2.3-20251231/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_patch.sql",
+        "7.2.3-20260123/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.1",
+      "to": "7.2.3-20251117",
+      "scripts": [
+        "7.2.3-20251117/7_2_3_patch.sql",
+        "7.2.3-20251117/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.1",
+      "to": "7.2.3-20251205",
+      "scripts": [
+        "7.2.3-20251205/7_2_3_patch.sql",
+        "7.2.3-20251205/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.1",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_patch.sql",
+        "7.2.3-20251231/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.1",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_patch.sql",
+        "7.2.3-20260123/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.3-20251117",
+      "to": "7.2.3-20251205",
+      "scripts": [
+        "7.2.3-20251205/7_2_3_patch.sql",
+        "7.2.3-20251205/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.3-20251205",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_patch.sql",
+        "7.2.3-20251231/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.2.3-20251231",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_patch.sql",
+        "7.2.3-20260123/7_2_3_Languages.sql"
+      ]
+    },
+    {
+      "from": "7.0",
+      "to": "7.2",
+      "scripts": [
+        "7.2/ME_7_2_0.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.1",
+      "scripts": [
+        "7.2.1/7_2_1.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20260123",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "6.5",
+      "to": "7.0",
+      "scripts": [
+        "7.0/ME_7_0_0_0.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "6.5",
+      "to": "7.2",
+      "scripts": [
+        "7.2/ME_7_2_0.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.1",
+      "scripts": [
+        "7.2.1/7_2_1.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "6.5",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.1",
+      "scripts": [
+        "7.2.1/7_2_1.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.0",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.1",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251117",
+      "to": "7.2.3-20251231",
+      "scripts": [
+        "7.2.3-20251231/7_2_3_Languages.sql",
+        "7.2.3-20251231/7_2_3_patch.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251117",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_Languages.sql",
+        "7.2.3-20260123/7_2_3_patch.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251117",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251205",
+      "to": "7.2.3-20260123",
+      "scripts": [
+        "7.2.3-20260123/7_2_3_Languages.sql",
+        "7.2.3-20260123/7_2_3_patch.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251205",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    },
+    {
+      "from": "7.2.3-20251231",
+      "to": "7.2.4",
+      "scripts": [
+        "7.2.4/7_2_3_Languages.sql",
+        "7.2.4/7_2_3_patch.sql",
+        "7.2.4/7_2_4.sql"
+      ],
+      "autoGenerated": true
+    }
+  ]
+}

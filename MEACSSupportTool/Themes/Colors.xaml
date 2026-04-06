@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="BrandPrimary" Color="#EEF3FA" />
+    <SolidColorBrush x:Key="BrandPrimarySoft" Color="#E5ECF6" />
+    <SolidColorBrush x:Key="BrandAccent" Color="#2E6FE8" />
+    <SolidColorBrush x:Key="BrandAccentSoft" Color="#EAF1FF" />
+    <SolidColorBrush x:Key="BrandAccentLine" Color="#5F8FEF" />
+
+    <SolidColorBrush x:Key="BgPrimary" Color="#E2E9F3" />
+    <SolidColorBrush x:Key="BgSecondary" Color="#EEF3F9" />
+    <SolidColorBrush x:Key="BgTertiary" Color="#E3EAF3" />
+    <SolidColorBrush x:Key="SurfaceRaised" Color="#F2F6FB" />
+    <SolidColorBrush x:Key="SurfaceSubtle" Color="#E9EFF7" />
+    <SolidColorBrush x:Key="SurfaceHover" Color="#DFE8F4" />
+    <SolidColorBrush x:Key="SurfacePressed" Color="#D6E0EF" />
+    <SolidColorBrush x:Key="BorderColor" Color="#AFC0D8" />
+    <SolidColorBrush x:Key="BorderStrong" Color="#90A8CB" />
+    <SolidColorBrush x:Key="FocusRing" Color="#4E7FCB" />
+
+    <SolidColorBrush x:Key="Success" Color="#1F9A63" />
+    <SolidColorBrush x:Key="SuccessSoft" Color="#DDF3E6" />
+    <SolidColorBrush x:Key="Info" Color="#2E6FE8" />
+    <SolidColorBrush x:Key="InfoSoft" Color="#DFEAFD" />
+    <SolidColorBrush x:Key="Warning" Color="#7D530E" />
+    <SolidColorBrush x:Key="WarningSoft" Color="#F8EBCF" />
+    <SolidColorBrush x:Key="Error" Color="#B03030" />
+    <SolidColorBrush x:Key="ErrorSoft" Color="#F7DEDE" />
+    <SolidColorBrush x:Key="SuccessFg" Color="#0D5C38" />
+    <SolidColorBrush x:Key="ErrorFg" Color="#7A1A1A" />
+
+    <SolidColorBrush x:Key="TextPrimary" Color="#10243C" />
+    <SolidColorBrush x:Key="TextSecondary" Color="#2F4F72" />
+    <SolidColorBrush x:Key="TextMuted" Color="#567294" />
+    <SolidColorBrush x:Key="TextInverse" Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="SelectionBg" Color="#2E6FE8" />
+    <SolidColorBrush x:Key="SelectionFg" Color="#FFFFFF" />
+</ResourceDictionary>

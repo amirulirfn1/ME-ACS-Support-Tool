@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "versionOrdering": { "mode": "semantic_with_optional_buildDate" },
+  "autoGenerate": {
+    "buildVersionPattern": "-",
+    "rules": [
+      { "type": "stable_to_build_same_major" },
+      { "type": "from_versions_to_build_major", "from": ["6.5"], "toMajor": 7 }
+    ]
+  }
+}
+

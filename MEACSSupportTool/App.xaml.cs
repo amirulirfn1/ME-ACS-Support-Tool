@@ -4,7 +4,7 @@ using System.Windows.Threading;
 
 namespace MEACSSupportTool;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     public App()
     {

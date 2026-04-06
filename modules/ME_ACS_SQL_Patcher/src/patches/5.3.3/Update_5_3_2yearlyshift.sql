@@ -1,0 +1,1 @@
+UPDATE form_languages SET field_desc1='Yearly Shift Setting', field_desc2='Tetapan Syif Tahunan', field_desc3='Tetapan Regu Tahunan' WHERE form_id=184 AND field_name='SoyFormTop1'

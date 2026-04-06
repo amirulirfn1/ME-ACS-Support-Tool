@@ -5,601 +5,524 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="ME ACS Support Tool"
-        Width="1360"
-        Height="860"
-        MinWidth="1180"
-        MinHeight="760"
+        Icon="Assets/me-acs-support-tool.ico"
+        Width="1000"
+        Height="800"
+        MinWidth="860"
+        MinHeight="680"
         WindowStartupLocation="CenterScreen"
-        Background="#FFF4F7FA"
-        FontFamily="Segoe UI">
-    <Window.Resources>
-        <LinearGradientBrush x:Key="HeroBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FF0F2740" Offset="0" />
-            <GradientStop Color="#FF17496E" Offset="0.55" />
-            <GradientStop Color="#FF0D6C74" Offset="1" />
-        </LinearGradientBrush>
+        Background="{DynamicResource BgPrimary}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <Style x:Key="SurfaceCardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="CornerRadius" Value="18" />
-            <Setter Property="Padding" Value="22" />
-            <Setter Property="BorderBrush" Value="#FFE2EAF2" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource Card}" Padding="12,10" Margin="0,0,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="#FF0A6C74" />
-            <Setter Property="BorderBrush" Value="#FF0A6C74" />
-            <Setter Property="Padding" Value="18,10" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="#33000000" BlurRadius="8" ShadowDepth="2" Opacity="0.25" />
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF146772" />
-                    <Setter Property="BorderBrush" Value="#FF146772" />
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX="1.02" ScaleY="1.02" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Background" Value="#FF9AB5BB" />
-                    <Setter Property="BorderBrush" Value="#FF9AB5BB" />
-                    <Setter Property="Foreground" Value="#FF3B5564" />
-                    <Setter Property="Effect" Value="{x:Null}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="#FF12324A" />
-            <Setter Property="Background" Value="#FFF5F8FB" />
-            <Setter Property="BorderBrush" Value="#FFD7E3ED" />
-            <Setter Property="Padding" Value="14,8" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="13" />
-        </Style>
-
-        <Style x:Key="ActionCardStyle" TargetType="Border" BasedOn="{StaticResource SurfaceCardStyle}">
-            <Setter Property="Margin" Value="0,0,0,0" />
-            <Setter Property="Padding" Value="28" />
-        </Style>
-
-        <Style x:Key="ExpanderStyleClean" TargetType="Expander">
-            <Setter Property="Foreground" Value="#FF102A43" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="16" />
-        </Style>
-
-        <Style x:Key="StatusBadgeStyle" TargetType="Border">
-            <Setter Property="CornerRadius" Value="14" />
-            <Setter Property="BorderBrush" Value="#FFC7E0F5" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Background" Value="#FFF4F9FF" />
-            <Setter Property="Padding" Value="8,4" />
-            <Setter Property="Margin" Value="0,0,8,8" />
-        </Style>
-
-        <Style x:Key="StatusBadgeTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#FF0E3A58" />
-        </Style>
-
-        <Style x:Key="MetricLabelStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#FF6B7C93" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-
-        <Style x:Key="MetricValueStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#FF102A43" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-    </Window.Resources>
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="28">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0"
-                    Padding="28"
-                    CornerRadius="24"
-                    Background="{StaticResource HeroBrush}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel>
-                        <Border Padding="10,4"
-                                HorizontalAlignment="Left"
-                                CornerRadius="20"
-                                Background="#22FFFFFF">
-                            <TextBlock Foreground="#FFE8F4FF"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Text="MAG Support Workspace" />
-                        </Border>
-
-                        <TextBlock Margin="0,18,0,0"
-                                   FontSize="34"
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="40" Height="40"
+                            Background="{DynamicResource BrandAccentSoft}"
+                            BorderBrush="{DynamicResource BrandAccentLine}"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Margin="0,0,12,0">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="15"
                                    FontWeight="Bold"
-                                   Foreground="White"
-                                   Text="ME ACS Support Tool" />
-                        <TextBlock Margin="0,10,0,0"
-                                   MaxWidth="720"
-                                   FontSize="15"
-                                   Foreground="#FFD9E8F5"
-                                   TextWrapping="Wrap"
-                                   Text="Run approved support fixes faster on dealer machines. Refresh once, pick the action, and keep logs only when you need them." />
-                        <StackPanel Margin="0,18,0,0">
-                            <TextBlock FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="#FFE8F4FF"
-                                       Text="System readiness" />
-                            <WrapPanel Margin="0,8,0,0">
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="Admin" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding AdminStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="Internet" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding InternetStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="SQL Target" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding SqlStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="SSMS" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding SsmsStatus}" />
-                                    </StackPanel>
-                                </Border>
-                            </WrapPanel>
-                        </StackPanel>
+                                   Foreground="{DynamicResource BrandAccent}"
+                                   Text="ME" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="ME ACS Support Tool"
+                                   FontSize="17"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}" />
+                        <TextBlock Margin="0,2,0,0"
+                                   Text="{Binding AppSubtitleText}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMuted}" />
+                        <WrapPanel Margin="0,4,0,0">
+                            <Border Style="{StaticResource StatusBadge}">
+                                <TextBlock Style="{StaticResource StatusBadgeText}" Text="{Binding AppBuildText}" />
+                            </Border>
+                            <Border Style="{StaticResource StatusBadge}">
+                                <TextBlock Style="{StaticResource StatusBadgeText}" Text="{Binding UpdateSummaryText}" />
+                            </Border>
+                        </WrapPanel>
                     </StackPanel>
-
-                    <StackPanel Grid.Column="1"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Stretch">
-                        <TextBlock HorizontalAlignment="Right"
-                                   Foreground="#FFD7E6F5"
-                                   Text="Last refresh" />
-                        <TextBlock HorizontalAlignment="Right"
-                                   Margin="0,6,0,0"
-                                   FontSize="20"
-                                   FontWeight="SemiBold"
-                                   Foreground="White"
-                                   Text="{Binding LastRefreshText}" />
-                        <Border Margin="0,20,0,0"
-                                Padding="14,10"
-                                CornerRadius="16"
-                                Background="#1AFFFFFF">
-                            <StackPanel>
-                                <TextBlock Foreground="#FFD7E6F5"
-                                           FontSize="11"
-                                           Text="Current session" />
-                                <TextBlock Margin="0,4,0,0"
-                                           Foreground="White"
-                                           FontWeight="SemiBold"
-                                           Text="{Binding StatusBanner}" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <Border Grid.Row="1"
-                    Margin="0,18,0,0"
-                    Style="{StaticResource SurfaceCardStyle}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel>
-                        <TextBlock FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="#FF0A6C74"
-                                   Text="Action-First Layout" />
-                        <TextBlock Margin="0,6,0,0"
-                                   FontSize="15"
-                                   Foreground="#FF38516B"
-                                   Text="Support actions are front and center. Status, logs, and recent runs stay available below when you need them." />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right">
-                        <Button Margin="0,0,10,0"
-                                Click="RefreshStatusButton_Click"
-                                IsEnabled="{Binding IsNotBusy}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Refresh Status" />
-                        <Button Margin="0,0,10,0"
-                                Click="OpenLogsFolderButton_Click"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Open Logs Folder" />
-                        <Button Click="OpenCurrentLogButton_Click"
-                                IsEnabled="{Binding CanOpenCurrentLog}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Open Current Log" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <StackPanel Grid.Row="2"
-                        Margin="0,24,0,0"
-                        HorizontalAlignment="Center"
-                        MaxWidth="1280">
-                <StackPanel HorizontalAlignment="Center"
-                            Margin="0,0,0,20">
-                    <TextBlock HorizontalAlignment="Center"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               Foreground="#FF0A6C74"
-                               Text="Support Actions" />
-                    <TextBlock Margin="0,8,0,0"
-                               HorizontalAlignment="Center"
-                               FontSize="30"
-                               FontWeight="Bold"
-                               Foreground="#FF102A43"
-                               Text="Choose the fix to run" />
-                    <TextBlock Margin="0,10,0,0"
-                               HorizontalAlignment="Center"
-                               MaxWidth="760"
-                               TextAlignment="Center"
-                               FontSize="15"
-                               Foreground="#FF5C6F82"
-                               Text="The app automates repeatable fixes while keeping logs and statuses just a scroll away." />
                 </StackPanel>
 
-                <WrapPanel HorizontalAlignment="Center"
-                          ItemWidth="360"
-                          ItemHeight="Auto"
-                          Orientation="Horizontal"
-                          VerticalAlignment="Top"
-                          Margin="0,0,0,24">
-                    <Border Style="{StaticResource ActionCardStyle}"
-                            Width="360">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Margin="0,0,8,0"
+                            Click="RefreshStatusButton_Click"
+                            IsEnabled="{Binding IsNotRefreshing}"
+                            Style="{StaticResource BtnSecondary}"
+                            Content="Refresh Status" />
+                    <Button Margin="0,0,8,0"
+                            Click="CheckForToolkitUpdatesButton_Click"
+                            IsEnabled="{Binding IsNotRefreshing}"
+                            Style="{StaticResource BtnSecondary}"
+                            Content="Check Updates" />
+                    <Button Click="OpenLogsFolderButton_Click"
+                            Style="{StaticResource BtnSecondary}"
+                            Padding="10,8"
+                            FontSize="12"
+                            Content="Logs" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Admin warning — only shown when not running as administrator -->
+        <Border Grid.Row="1"
+                Padding="14,10"
+                Margin="0,0,0,8"
+                Background="{DynamicResource WarningSoft}"
+                BorderBrush="{DynamicResource Warning}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Visibility="{Binding AdminWarningVisibility}">
+            <TextBlock Text="Not running as Administrator — RabbitMQ Repair requires admin rights to work."
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource Warning}" />
+        </Border>
+
+        <!-- Status strip -->
+        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="12,10" Margin="0,0,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <WrapPanel>
+                    <Border Style="{StaticResource MetaBadge}">
                         <StackPanel>
-                            <Border Padding="10,4"
-                                    HorizontalAlignment="Left"
-                                    CornerRadius="20"
-                                    Background="#FFE7F5F3">
-                                <TextBlock Foreground="#FF0A6C74"
-                                           FontWeight="SemiBold"
-                                           Text="Service Recovery" />
-                            </Border>
-
-                            <TextBlock Margin="0,18,0,0"
-                                       FontSize="26"
-                                       FontWeight="Bold"
-                                       Foreground="#FF102A43"
-                                       Text="RabbitMQ Repair" />
-
-                            <TextBlock Margin="0,12,0,0"
-                                       TextWrapping="Wrap"
-                                       FontSize="14"
-                                       Foreground="#FF4C5F6F"
-                                       Text="Reinstalls RabbitMQ and Erlang to recover from renamed hosts or corrupt services." />
-
-                            <WrapPanel Margin="0,20,0,0">
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="RabbitMQ" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding RabbitMqStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="Admin" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding AdminStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="Internet" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding InternetStatus}" />
-                                    </StackPanel>
-                                </Border>
-                            </WrapPanel>
-
-                            <TextBlock Margin="0,14,0,0"
-                                       FontSize="12"
-                                       Foreground="#FF6B7C93"
-                                       TextWrapping="Wrap"
-                                       Text="Stops MagServer, reinstalls Erlang &amp; RabbitMQ silently, and rewrites the nodename for renewed services." />
-
-                            <Button Margin="0,20,0,0"
-                                    Height="46"
-                                    Click="RunRabbitMqRepairButton_Click"
-                                    IsEnabled="{Binding IsNotBusy}"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Content="Run RabbitMQ Repair" />
+                            <TextBlock Text="Machine" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding MachineName}" Style="{StaticResource StatusBadgeText}" />
                         </StackPanel>
                     </Border>
-
-                    <Border Style="{StaticResource ActionCardStyle}"
-                            Width="360">
+                    <Border Style="{StaticResource MetaBadge}">
                         <StackPanel>
-                            <Border Padding="10,4"
-                                    HorizontalAlignment="Left"
-                                    CornerRadius="20"
-                                    Background="#FFE9F1FF">
-                                <TextBlock Foreground="#FF2457A6"
-                                           FontWeight="SemiBold"
-                                           Text="Database Optimization" />
-                            </Border>
-
-                            <TextBlock Margin="0,18,0,0"
-                                       FontSize="26"
-                                       FontWeight="Bold"
-                                       Foreground="#FF102A43"
-                                       Text="Solve Client Lag" />
-
-                            <TextBlock Margin="0,12,0,0"
-                                       TextWrapping="Wrap"
-                                       FontSize="14"
-                                       Foreground="#FF4C5F6F"
-                                       Text="Creates the lag-fix index on magetegra.dbo.events without launching SSMS." />
-
-                            <WrapPanel Margin="0,20,0,0">
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="magetegra" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding DatabaseStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="SQL" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding SqlStatus}" />
-                                    </StackPanel>
-                                </Border>
-                            </WrapPanel>
-
-                            <TextBlock Margin="0,14,0,0"
-                                       FontSize="12"
-                                       Foreground="#FF6B7C93"
-                                       TextWrapping="Wrap"
-                                       Text="Validates the local SQL instance, verifies the magetegra database, and applies the IX_events fix only when missing." />
-
-                            <Button Margin="0,20,0,0"
-                                    Height="46"
-                                    Click="RunSolveClientLagButton_Click"
-                                    IsEnabled="{Binding IsNotBusy}"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Content="Run Solve Client Lag" />
+                            <TextBlock Text="User" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding CurrentUser}" Style="{StaticResource StatusBadgeText}" />
                         </StackPanel>
                     </Border>
-
-                    <Border Style="{StaticResource ActionCardStyle}"
-                            Width="360">
+                    <Border Style="{StaticResource StatusBadge}"
+                            Background="{Binding InternetBadgeBg}"
+                            BorderBrush="{Binding InternetBadgeBorder}">
                         <StackPanel>
-                            <Border Padding="10,4"
-                                    HorizontalAlignment="Left"
-                                    CornerRadius="20"
-                                    Background="#FFF8EEE3">
-                                <TextBlock Foreground="#FF9A5A12"
-                                           FontWeight="SemiBold"
-                                           Text="One-Time Setup" />
-                            </Border>
-
-                            <TextBlock Margin="0,18,0,0"
-                                       FontSize="26"
-                                       FontWeight="Bold"
-                                       Foreground="#FF102A43"
-                                       Text="Install SSMS" />
-
-                            <TextBlock Margin="0,12,0,0"
-                                       TextWrapping="Wrap"
-                                       FontSize="14"
-                                       Foreground="#FF4C5F6F"
-                                       Text="Downloads and launches the SSMS installer when the tool detects it is missing." />
-
-                            <WrapPanel Margin="0,20,0,0">
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="SSMS" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="{Binding SsmsStatus}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource StatusBadgeStyle}">
-                                    <StackPanel>
-                                        <TextBlock FontSize="10" Foreground="#FF6B7C93" Text="Status" />
-                                        <TextBlock Style="{StaticResource StatusBadgeTextStyle}" Text="One-time install" />
-                                    </StackPanel>
-                                </Border>
-                            </WrapPanel>
-
-                            <TextBlock Margin="0,14,0,0"
-                                       FontSize="12"
-                                       Foreground="#FF6B7C93"
-                                       TextWrapping="Wrap"
-                                       Text="Fetches the installer from aka.ms/ssmsfullsetup and opens the wizard for you to finish." />
-
-                            <Button Margin="0,20,0,0"
-                                    Height="46"
-                                    Click="RunInstallSsmsButton_Click"
-                                    IsEnabled="{Binding IsNotBusy}"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Content="Run Install SSMS" />
+                            <TextBlock Text="Internet" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding InternetStatus}" Style="{StaticResource StatusBadgeText}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatusBadge}"
+                            Background="{Binding RabbitMqBadgeBg}"
+                            BorderBrush="{Binding RabbitMqBadgeBorder}">
+                        <StackPanel>
+                            <TextBlock Text="RabbitMQ" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding RabbitMqStatus}" Style="{StaticResource StatusBadgeText}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatusBadge}"
+                            Background="{Binding SqlBadgeBg}"
+                            BorderBrush="{Binding SqlBadgeBorder}">
+                        <StackPanel>
+                            <TextBlock Text="SQL" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding SqlStatus}" Style="{StaticResource StatusBadgeText}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatusBadge}"
+                            Background="{Binding DatabaseBadgeBg}"
+                            BorderBrush="{Binding DatabaseBadgeBorder}">
+                        <StackPanel>
+                            <TextBlock Text="Database" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding DatabaseStatus}" Style="{StaticResource StatusBadgeText}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource StatusBadge}"
+                            Background="{Binding SsmsBadgeBg}"
+                            BorderBrush="{Binding SsmsBadgeBorder}">
+                        <StackPanel>
+                            <TextBlock Text="SSMS" Style="{StaticResource EyebrowText}" />
+                            <TextBlock Text="{Binding SsmsStatus}" Style="{StaticResource StatusBadgeText}" />
                         </StackPanel>
                     </Border>
                 </WrapPanel>
-            </StackPanel>
-
-            <StackPanel Grid.Row="3"
-                        Margin="0,26,0,0">
-                <Border Background="#FF0F2740"
-                        CornerRadius="18"
-                        Padding="14"
-                        Margin="0,0,0,16">
-                    <TextBlock FontSize="13"
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock HorizontalAlignment="Right" Text="Last refresh" Style="{StaticResource EyebrowText}" />
+                    <TextBlock HorizontalAlignment="Right"
+                               Margin="0,3,0,0"
+                               Text="{Binding LastRefreshText}"
+                               FontSize="12"
                                FontWeight="SemiBold"
-                               Foreground="White"
-                               Text="{Binding StatusBanner}" />
-                </Border>
+                               Foreground="{DynamicResource TextPrimary}" />
+                </StackPanel>
+            </Grid>
+        </Border>
 
-                <WrapPanel HorizontalAlignment="Center"
-                          ItemWidth="360"
-                          ItemHeight="Auto"
-                          Margin="0,0,0,0">
-                    <Border Style="{StaticResource SurfaceCardStyle}"
-                            Width="360">
-                        <Expander Style="{StaticResource ExpanderStyleClean}"
-                                  Header="Machine status"
-                                  IsExpanded="False">
-                            <UniformGrid Margin="0,18,0,0"
-                                         Columns="2"
-                                         Rows="5">
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="Computer name" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding MachineName}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="Windows user" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding CurrentUser}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="Administrator" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding AdminStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="Internet" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding InternetStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="RabbitMQ" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding RabbitMqStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="SSMS" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding SsmsStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="SQL local instance" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding SqlStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,16">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="magetegra DB" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding DatabaseStatus}" />
-                                </StackPanel>
-                                <StackPanel Margin="0,0,14,0">
-                                    <TextBlock Style="{StaticResource MetricLabelStyle}" Text="Log storage" />
-                                    <TextBlock Style="{StaticResource MetricValueStyle}" Text="{Binding LogRootDirectory}" />
-                                </StackPanel>
-                            </UniformGrid>
-                        </Expander>
+        <!-- Main content: Quick Repairs + SQL Patcher -->
+        <Grid Grid.Row="3" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Quick Repairs -->
+            <Border Grid.Column="0" Style="{StaticResource Card}" Padding="20" Margin="0,0,8,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <TextBlock Text="Quick Repairs" Style="{StaticResource SectionHeaderText}" />
+                    <TextBlock Margin="0,4,0,0"
+                               Text="Run common fixes directly on this machine."
+                               Style="{StaticResource FieldLabelText}" />
+
+                    <!-- RabbitMQ Repair -->
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="RabbitMQ Repair"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="Reinstall RabbitMQ and Erlang after a PC rename or broken service."
+                                       Style="{StaticResource FieldLabelText}" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Admin required" />
+                                </Border>
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Internet required" />
+                                </Border>
+                            </WrapPanel>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Width="72"
+                                Click="RunRabbitMqRepairButton_Click"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource BtnPrimary}"
+                                Content="Run" />
+                    </Grid>
+
+                    <Rectangle Margin="0,18,0,0" Height="1" Fill="{DynamicResource BorderColor}" />
+
+                    <!-- Solve Client Lag -->
+                    <Grid Margin="0,18,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Solve Client Lag"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="Apply the bundled SQL optimisation to the local magetegra database."
+                                       Style="{StaticResource FieldLabelText}" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Local SQL" />
+                                </Border>
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Idempotent" />
+                                </Border>
+                            </WrapPanel>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Width="72"
+                                Click="RunSolveClientLagButton_Click"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource BtnPrimary}"
+                                Content="Run" />
+                    </Grid>
+
+                    <Rectangle Margin="0,18,0,0" Height="1" Fill="{DynamicResource BorderColor}" />
+
+                    <!-- Install SSMS -->
+                    <Grid Margin="0,18,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Install SSMS"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="Download SQL Server Management Studio and open the installer."
+                                       Style="{StaticResource FieldLabelText}" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Internet required" />
+                                </Border>
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="One-time setup" />
+                                </Border>
+                            </WrapPanel>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Width="72"
+                                Click="RunInstallSsmsButton_Click"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource BtnPrimary}"
+                                Content="Run" />
+                    </Grid>
+
+                    <Rectangle Margin="0,18,0,0" Height="1" Fill="{DynamicResource BorderColor}" />
+
+                    <!-- Create Local User -->
+                    <Grid Margin="0,18,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Create Local User"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="Create or repair the local magetegra support account and keep the password from expiring."
+                                       Style="{StaticResource FieldLabelText}" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Admin required" />
+                                </Border>
+                                <Border Style="{StaticResource StatusBadge}">
+                                    <TextBlock Style="{StaticResource StatusBadgeText}" Text="Local account" />
+                                </Border>
+                            </WrapPanel>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Width="72"
+                                Click="RunCreateSupportUserButton_Click"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource BtnPrimary}"
+                                Content="Run" />
+                    </Grid>
+                </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <ScrollViewer Grid.Column="1" Margin="8,0,0,0"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+
+                    <!-- SQL Patcher — primary focus for support staff -->
+                    <Border Style="{StaticResource Card}" Padding="20" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="SQL Patcher" Style="{StaticResource SectionHeaderText}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="Patch a Magetegra database backup to a target version."
+                                       Style="{StaticResource FieldLabelText}" />
+
+                            <Border Style="{StaticResource StatusBadge}" HorizontalAlignment="Left" Margin="0,14,0,0">
+                                <TextBlock Style="{StaticResource StatusBadgeText}" Text="{Binding SqlPatcherStatus}" />
+                            </Border>
+
+                            <TextBlock Margin="0,10,0,0"
+                                       Text="{Binding SqlPatcherBuildText}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="{Binding SqlPatcherDetails}"
+                                       Style="{StaticResource FieldLabelText}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,4,0,0"
+                                       Text="{Binding SqlPatcherLocation}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       TextWrapping="Wrap" />
+
+                            <Button Margin="0,18,0,8"
+                                    HorizontalAlignment="Stretch"
+                                    Click="LaunchSqlPatcherButton_Click"
+                                    IsEnabled="{Binding CanLaunchSqlPatcher}"
+                                    Style="{StaticResource BtnPrimary}"
+                                    Content="Open SQL Patcher" />
+                            <Button HorizontalAlignment="Stretch"
+                                    Click="OpenSqlPatcherWorkspaceButton_Click"
+                                    IsEnabled="{Binding CanOpenSqlPatcherWorkspace}"
+                                    Style="{StaticResource BtnSecondary}"
+                                    Content="Open Extension Folder" />
+                        </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource SurfaceCardStyle}"
-                            Width="360">
-                        <Expander Style="{StaticResource ExpanderStyleClean}"
-                                  Header="Activity console"
-                                  IsExpanded="{Binding ActivityConsoleExpanded}">
-                            <Grid Margin="0,18,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Foreground="#FF5C6F82"
-                                           Text="{Binding StatusBanner}" />
-
-                                <TextBox Grid.Row="1"
-                                         Margin="0,14,0,0"
-                                         MinHeight="220"
-                                         IsReadOnly="True"
-                                         Text="{Binding LiveLogText, Mode=OneWay}"
-                                         FontFamily="Consolas"
-                                         FontSize="12.5"
-                                         TextWrapping="Wrap"
-                                         VerticalScrollBarVisibility="Auto"
-                                         AcceptsReturn="True"
-                                         BorderBrush="#FFE2EAF2"
-                                         BorderThickness="1"
-                                         Background="#FFF9FBFD" />
-                            </Grid>
-                        </Expander>
+                    <!-- Update available banner — only shows when an update is ready -->
+                    <Border Margin="0,0,0,8"
+                            Padding="14,12"
+                            Background="{DynamicResource SuccessSoft}"
+                            BorderBrush="{DynamicResource Success}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Visibility="{Binding ApplyUpdateVisibility}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock Text="Update available"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Success}" />
+                                <TextBlock Margin="0,3,0,0"
+                                           Text="{Binding UpdateStatusText}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextSecondary}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Click="ApplyToolkitUpdateButton_Click"
+                                    IsEnabled="{Binding CanApplyToolkitUpdate}"
+                                    Style="{StaticResource BtnPrimary}"
+                                    Content="Apply Update" />
+                        </Grid>
                     </Border>
 
-                    <Border Style="{StaticResource SurfaceCardStyle}"
-                            Width="360">
-                        <Expander Style="{StaticResource ExpanderStyleClean}"
-                                  Header="Recent runs"
-                                  IsExpanded="False">
-                            <DataGrid Margin="0,18,0,0"
-                                      AutoGenerateColumns="False"
-                                      HeadersVisibility="Column"
-                                      CanUserAddRows="False"
-                                      CanUserDeleteRows="False"
-                                      IsReadOnly="True"
-                                      ItemsSource="{Binding HistoryItems}"
-                                      MinHeight="220"
-                                      MouseDoubleClick="HistoryGrid_MouseDoubleClick">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Started" Binding="{Binding StartedAt, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}" Width="150" />
-                                    <DataGridTextColumn Header="Action" Binding="{Binding ActionName}" Width="120" />
-                                    <DataGridTextColumn Header="Outcome" Binding="{Binding Outcome}" Width="100" />
-                                    <DataGridTextColumn Header="Summary" Binding="{Binding Summary}" Width="*" />
-                                </DataGrid.Columns>
-                                <DataGrid.RowStyle>
-                                    <Style TargetType="DataGridRow">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Outcome}" Value="Success">
-                                                <Setter Property="Background" Value="#FFEAF9F4" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Outcome}" Value="Failed">
-                                                <Setter Property="Background" Value="#FFFDE8E8" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Outcome}" Value="AlreadyApplied">
-                                                <Setter Property="Background" Value="#FFF8F3DF" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Outcome}" Value="Skipped">
-                                                <Setter Property="Background" Value="#FFF5F7FA" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </DataGrid.RowStyle>
-                            </DataGrid>
-                        </Expander>
-                    </Border>
-                </WrapPanel>
-            </StackPanel>
+                    <!-- Toolkit Updates — maintainer section, collapsed by default -->
+                    <Expander IsExpanded="False" Margin="0,0,0,4">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Toolkit Updates"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMuted}"
+                                           VerticalAlignment="Center" />
+                                <Border Background="{DynamicResource SurfaceSubtle}"
+                                        BorderBrush="{DynamicResource BorderColor}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="6,2"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding UpdateSummaryText}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextMuted}" />
+                                </Border>
+                            </StackPanel>
+                        </Expander.Header>
+                        <Border Style="{StaticResource Card}" Padding="16" Margin="0,6,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Update source" Style="{StaticResource EyebrowText}" />
+                                <TextBlock Margin="0,4,0,0"
+                                           Text="{Binding UpdateFeedPathText}"
+                                           Style="{StaticResource FieldLabelText}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Margin="0,10,0,0" Text="Last check" Style="{StaticResource EyebrowText}" />
+                                <TextBlock Margin="0,4,0,0"
+                                           Text="{Binding LastUpdateCheckText}"
+                                           Style="{StaticResource FieldLabelText}"
+                                           TextWrapping="Wrap" />
+                                <WrapPanel Margin="0,14,0,0">
+                                    <Button Margin="0,0,8,8"
+                                            Click="SetUpdateFeedUrlButton_Click"
+                                            Style="{StaticResource BtnSecondary}"
+                                            Content="Set Feed URL" />
+                                    <Button Margin="0,0,8,8"
+                                            Click="ConfigureUpdateFeedButton_Click"
+                                            Style="{StaticResource BtnSecondary}"
+                                            Content="Set Feed Folder" />
+                                    <Button Margin="0,0,0,8"
+                                            Click="ClearUpdateFeedButton_Click"
+                                            Style="{StaticResource BtnSecondary}"
+                                            Content="Clear Feed" />
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </Expander>
+
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
-    </ScrollViewer>
+
+        <!-- Bottom: Status banner + activity log | Recent runs -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Status banner + live log -->
+            <Border Grid.Column="0" Style="{StaticResource NextActionBanner}" Padding="14,12" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding StatusBanner}"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               TextWrapping="Wrap" />
+                    <StackPanel Margin="0,10,0,0"
+                                Orientation="Vertical"
+                                Visibility="{Binding BusyIndicatorVisibility}">
+                        <TextBlock Text="{Binding BusyIndicatorText}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondary}" />
+                        <ProgressBar Margin="0,6,0,0"
+                                     Height="6"
+                                     IsIndeterminate="True" />
+                    </StackPanel>
+                    <TextBox Margin="0,10,0,0"
+                             Height="100"
+                             Style="{StaticResource ReadOnlyConsoleTextBox}"
+                             Text="{Binding LiveLogText, Mode=OneWay}"
+                             Visibility="{Binding ActivityConsoleVisibility}" />
+                    <Button Margin="0,8,0,0"
+                            HorizontalAlignment="Left"
+                            Click="OpenCurrentLogButton_Click"
+                            IsEnabled="{Binding CanOpenCurrentLog}"
+                            Style="{StaticResource BtnSecondary}"
+                            Content="Open Log File"
+                            Visibility="{Binding ActivityConsoleVisibility}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Recent runs -->
+            <Border Grid.Column="1" Style="{StaticResource Card}" Padding="14" Margin="8,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="Recent runs" Style="{StaticResource SectionHeaderText}" />
+                    <DataGrid Margin="0,10,0,0"
+                              MaxHeight="160"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              ItemsSource="{Binding HistoryItems}"
+                              ToolTip="Double-click a row to open its log file"
+                              MouseDoubleClick="HistoryGrid_MouseDoubleClick">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding StartedAt}" Header="Started" Width="140" />
+                            <DataGridTextColumn Binding="{Binding ActionName}" Header="Action" Width="145" />
+                            <DataGridTextColumn Binding="{Binding Outcome}" Header="Outcome" Width="90" />
+                            <DataGridTextColumn Binding="{Binding Summary}" Header="Summary" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
 </Window>

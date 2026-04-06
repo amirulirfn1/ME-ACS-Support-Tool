@@ -12,7 +12,16 @@ namespace MEACSSupportTool.Services;
 
 public sealed class SupportActionRunner
 {
+    private const string SupportUserName = "magetegra";
+    private const string SupportUserPassword = "11398MEacs";
+    private const string SupportUserFullName = "MagEtegra";
+    private const string SupportUserDescription = "MagEtegra Service Account";
     private const string SsmsInstallerUrl = "https://aka.ms/ssmsfullsetup";
+    private const string RabbitMqServiceName = "RabbitMQ";
+    private static readonly TimeSpan RabbitMqStopTimeout = TimeSpan.FromSeconds(90);
+    private static readonly TimeSpan RabbitMqStartTimeout = TimeSpan.FromSeconds(120);
+    private static readonly TimeSpan RabbitMqServiceRegistrationTimeout = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan ServicePollInterval = TimeSpan.FromSeconds(2);
     private readonly SupportEnvironmentService _environmentService;
     private readonly string _sqlScriptPath;
 
@@ -72,7 +81,9 @@ public sealed class SupportActionRunner
             await DownloadFileAsync(rabbitUrl, rabbitInstaller, log, "RabbitMQ");
             await log.WriteAsync("Replacement installers downloaded successfully. Continuing with uninstall and reinstall.");
 
-            await StopProcessesAsync(log, ["MagServer", "erl", "epmd"]);
+            await StopProcessesAsync(log, ["MagServer"]);
+            await StopRabbitMqServiceAsync(log);
+            await StopProcessesAsync(log, ["erl", "epmd"]);
             await StopRabbitMqServiceAsync(log);
             await UninstallRabbitMqAsync(log);
             await UninstallErlangAsync(log);
@@ -87,6 +98,7 @@ public sealed class SupportActionRunner
             await Task.Delay(TimeSpan.FromSeconds(12));
 
             await ConfigureRabbitMqNodeNameAsync(log);
+            await WaitForRabbitMqServiceToExistAsync(log);
             await StartRabbitMqServiceAsync(log);
 
             if (!await IsRabbitMqRunningAsync())
@@ -113,6 +125,24 @@ public sealed class SupportActionRunner
             {
                 Outcome = RunOutcome.Failed,
                 Summary = "Could not download RabbitMQ or Erlang installers. The existing installation was left unchanged."
+            };
+        }
+        catch (RabbitMqRepairException ex)
+        {
+            await log.WriteAsync(ex.Message);
+            return new RunResult
+            {
+                Outcome = RunOutcome.Failed,
+                Summary = ex.UserMessage
+            };
+        }
+        catch (Exception ex)
+        {
+            await log.WriteAsync($"RabbitMQ repair failed unexpectedly: {ex.Message}");
+            return new RunResult
+            {
+                Outcome = RunOutcome.Failed,
+                Summary = "RabbitMQ Repair hit an unexpected error. Check the run log for the exact step that failed."
             };
         }
         finally
@@ -258,25 +288,12 @@ public sealed class SupportActionRunner
             }
 
             await DownloadFileAsync(SsmsInstallerUrl, installerPath, log, "SQL Server Management Studio");
-            var exitCode = await LaunchInstallerAsync(installerPath, log);
-
-            await Task.Delay(TimeSpan.FromSeconds(2));
-            var installed = _environmentService.IsSsmsInstalled();
-            if (installed)
-            {
-                await log.WriteAsync("SQL Server Management Studio was detected after setup.");
-                return new RunResult
-                {
-                    Outcome = RunOutcome.Success,
-                    Summary = "SQL Server Management Studio was installed successfully."
-                };
-            }
-
-            await log.WriteAsync($"Installer exited with code {exitCode}, but SSMS was not detected.");
+            await LaunchInstallerAsync(installerPath, log);
+            await log.WriteAsync("SSMS installer launched successfully. Complete the setup wizard to finish installation.");
             return new RunResult
             {
-                Outcome = RunOutcome.Failed,
-                Summary = "SSMS setup closed, but SQL Server Management Studio was not detected afterward."
+                Outcome = RunOutcome.Success,
+                Summary = "SSMS installer downloaded and opened. Finish the installation wizard to complete setup."
             };
         }
         catch (HttpRequestException ex)
@@ -291,6 +308,87 @@ public sealed class SupportActionRunner
         finally
         {
             SafeDelete(installerPath);
+        }
+    }
+
+    public async Task<RunResult> RunEnsureSupportUserAsync(RunLogSession log)
+    {
+        await log.WriteAsync($"Ensuring local support account '{SupportUserName}' exists and is configured.");
+
+        if (!IsAdministrator())
+        {
+            await log.WriteAsync("Blocked because the app is not running as Administrator.");
+            return new RunResult
+            {
+                Outcome = RunOutcome.Failed,
+                Summary = "Run the tool as Administrator before creating the local support account."
+            };
+        }
+
+        try
+        {
+            await ExecutePowerShellScriptAsync($$"""
+$ErrorActionPreference = 'Stop'
+$username = '{{SupportUserName}}'
+$plainPassword = '{{SupportUserPassword}}'
+$fullName = '{{SupportUserFullName}}'
+$description = '{{SupportUserDescription}}'
+$securePassword = ConvertTo-SecureString $plainPassword -AsPlainText -Force
+
+$existingUser = Get-LocalUser -Name $username -ErrorAction SilentlyContinue
+if ($null -eq $existingUser) {
+    New-LocalUser -Name $username `
+                  -Password $securePassword `
+                  -FullName $fullName `
+                  -Description $description `
+                  -PasswordNeverExpires `
+                  -UserMayNotChangePassword | Out-Null
+    Write-Output "Created local user $username."
+} else {
+    Set-LocalUser -Name $username `
+                  -Password $securePassword `
+                  -FullName $fullName `
+                  -Description $description `
+                  -PasswordNeverExpires $true `
+                  -UserMayChangePassword $false | Out-Null
+    Write-Output "Updated existing local user $username."
+}
+
+Enable-LocalUser -Name $username -ErrorAction SilentlyContinue
+Write-Output "Ensured $username is enabled."
+
+$adminMember = Get-LocalGroupMember -Group 'Administrators' -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -match "(^|\\\\)$([regex]::Escape($username))$" }
+if ($null -eq $adminMember) {
+    Add-LocalGroupMember -Group 'Administrators' -Member $username
+    Write-Output "Added $username to the Administrators group."
+} else {
+    Write-Output "$username is already in the Administrators group."
+}
+
+& net.exe user $username $plainPassword /passwordchg:no /expires:never
+if ($LASTEXITCODE -ne 0) {
+    throw "net user failed with exit code $LASTEXITCODE while enforcing password policy."
+}
+
+Write-Output "Password policy set: user cannot change password, password never expires."
+""", log);
+
+            await log.WriteAsync($"Local support account '{SupportUserName}' is ready.");
+            return new RunResult
+            {
+                Outcome = RunOutcome.Success,
+                Summary = $"Local user '{SupportUserName}' is ready, is an Administrator, and has a non-expiring password."
+            };
+        }
+        catch (Exception ex)
+        {
+            await log.WriteAsync($"Failed to configure local support account: {ex.Message}");
+            return new RunResult
+            {
+                Outcome = RunOutcome.Failed,
+                Summary = $"Could not create or update local user '{SupportUserName}'. Check the run log for the failing step."
+            };
         }
     }
 
@@ -393,6 +491,12 @@ public sealed class SupportActionRunner
                 try
                 {
                     process.Kill(entireProcessTree: true);
+                    if (!process.WaitForExit(10000))
+                    {
+                        await log.WriteAsync($"Process {process.ProcessName}.exe (PID {process.Id}) is still shutting down.");
+                        continue;
+                    }
+
                     await log.WriteAsync($"Stopped process {process.ProcessName}.exe (PID {process.Id}).");
                 }
                 catch (Exception ex)
@@ -407,16 +511,40 @@ public sealed class SupportActionRunner
     {
         try
         {
-            using var service = new ServiceController("RabbitMQ");
+            using var service = new ServiceController(RabbitMqServiceName);
+            service.Refresh();
             if (service.Status == ServiceControllerStatus.Stopped)
             {
                 await log.WriteAsync("RabbitMQ service is already stopped.");
                 return;
             }
 
-            await log.WriteAsync("Stopping RabbitMQ service.");
-            service.Stop();
-            service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20));
+            await log.WriteAsync($"Stopping RabbitMQ service from state {service.Status}.");
+            if (service.Status != ServiceControllerStatus.StopPending)
+            {
+                service.Stop();
+            }
+
+            try
+            {
+                await WaitForServiceStatusAsync(service, ServiceControllerStatus.Stopped, RabbitMqStopTimeout, log, "stopping");
+            }
+            catch (RabbitMqRepairException)
+            {
+                await log.WriteAsync("RabbitMQ stop timed out. Forcing Erlang-related processes down and retrying once.");
+                await StopProcessesAsync(log, ["erl", "epmd"]);
+
+                service.Refresh();
+                if (service.Status != ServiceControllerStatus.Stopped)
+                {
+                    if (service.Status != ServiceControllerStatus.StopPending)
+                    {
+                        service.Stop();
+                    }
+
+                    await WaitForServiceStatusAsync(service, ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(45), log, "stopping after force-close");
+                }
+            }
         }
         catch (InvalidOperationException)
         {
@@ -426,9 +554,8 @@ public sealed class SupportActionRunner
 
     private static async Task UninstallRabbitMqAsync(RunLogSession log)
     {
-        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        var uninstallPath = Path.Combine(programFiles, "RabbitMQ Server", "uninstall.exe");
-        if (!File.Exists(uninstallPath))
+        var uninstallPath = FindRabbitMqUninstallerPath();
+        if (string.IsNullOrWhiteSpace(uninstallPath) || !File.Exists(uninstallPath))
         {
             await log.WriteAsync("RabbitMQ uninstaller was not found. Continuing with cleanup.");
             return;
@@ -441,18 +568,20 @@ public sealed class SupportActionRunner
     private static async Task UninstallErlangAsync(RunLogSession log)
     {
         var uninstallers = new List<string>();
-        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        var canonical = Path.Combine(programFiles, "Erlang OTP", "Uninstall.exe");
-        if (File.Exists(canonical))
+        foreach (var root in GetProgramFilesRoots())
         {
-            uninstallers.Add(canonical);
-        }
+            var canonical = Path.Combine(root, "Erlang OTP", "Uninstall.exe");
+            if (File.Exists(canonical))
+            {
+                uninstallers.Add(canonical);
+            }
 
-        if (Directory.Exists(programFiles))
-        {
-            uninstallers.AddRange(Directory.GetDirectories(programFiles, "erl*")
-                .Select(path => Path.Combine(path, "Uninstall.exe"))
-                .Where(File.Exists));
+            if (Directory.Exists(root))
+            {
+                uninstallers.AddRange(Directory.GetDirectories(root, "erl*")
+                    .Select(path => Path.Combine(path, "Uninstall.exe"))
+                    .Where(File.Exists));
+            }
         }
 
         if (uninstallers.Count == 0)
@@ -474,7 +603,9 @@ public sealed class SupportActionRunner
         {
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RabbitMQ"),
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "RabbitMQ Server"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "RabbitMQ Server"),
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Erlang OTP"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Erlang OTP"),
             @"C:\Windows\System32\config\systemprofile\AppData\Roaming\RabbitMQ"
         }.ToList();
 
@@ -518,17 +649,74 @@ public sealed class SupportActionRunner
             Timeout = TimeSpan.FromMinutes(5)
         };
 
-        using var response = await client.GetAsync(url);
+        using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
 
+        var totalBytes = response.Content.Headers.ContentLength;
         await using var stream = await response.Content.ReadAsStreamAsync();
         await using var file = File.Create(outputPath);
-        await stream.CopyToAsync(file);
+        var buffer = new byte[81920];
+        long totalRead = 0;
+        var nextPercentToReport = 0;
+        var nextBytesToReport = 5L * 1024 * 1024;
+
+        while (true)
+        {
+            var read = await stream.ReadAsync(buffer);
+            if (read == 0)
+            {
+                break;
+            }
+
+            await file.WriteAsync(buffer.AsMemory(0, read));
+            totalRead += read;
+
+            if (totalBytes.HasValue && totalBytes.Value > 0)
+            {
+                var percent = (int)Math.Floor(totalRead * 100d / totalBytes.Value);
+                if (percent >= nextPercentToReport)
+                {
+                    await log.WriteAsync(
+                        $"Download progress - {label}: {Math.Min(percent, 100)}% ({FormatBytes(totalRead)} / {FormatBytes(totalBytes.Value)})");
+                    nextPercentToReport = Math.Min(100, nextPercentToReport + 5);
+                }
+            }
+            else if (totalRead >= nextBytesToReport)
+            {
+                await log.WriteAsync($"Download progress - {label}: {FormatBytes(totalRead)} downloaded");
+                nextBytesToReport += 5L * 1024 * 1024;
+            }
+        }
+
+        if (totalBytes.HasValue && totalBytes.Value > 0 && nextPercentToReport <= 100)
+        {
+            await log.WriteAsync(
+                $"Download progress - {label}: 100% ({FormatBytes(totalRead)} / {FormatBytes(totalBytes.Value)})");
+        }
+        else if (!totalBytes.HasValue)
+        {
+            await log.WriteAsync($"Download progress - {label}: completed ({FormatBytes(totalRead)})");
+        }
 
         await log.WriteAsync($"Downloaded {label} installer to {outputPath}");
     }
 
-    private static async Task<int> LaunchInstallerAsync(string installerPath, RunLogSession log)
+    private static string FormatBytes(long bytes)
+    {
+        string[] units = ["B", "KB", "MB", "GB"];
+        double value = bytes;
+        var unitIndex = 0;
+
+        while (value >= 1024 && unitIndex < units.Length - 1)
+        {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return $"{value:0.#} {units[unitIndex]}";
+    }
+
+    private static Task LaunchInstallerAsync(string installerPath, RunLogSession log)
     {
         var startInfo = new ProcessStartInfo
         {
@@ -543,10 +731,7 @@ public sealed class SupportActionRunner
             throw new InvalidOperationException("The installer process could not be started.");
         }
 
-        await log.WriteAsync($"Launched installer: {installerPath}");
-        await process.WaitForExitAsync();
-        await log.WriteAsync($"Installer closed with exit code {process.ExitCode}.");
-        return process.ExitCode;
+        return log.WriteAsync($"Launched installer: {installerPath}");
     }
 
     private static async Task ConfigureRabbitMqNodeNameAsync(RunLogSession log)
@@ -564,18 +749,30 @@ public sealed class SupportActionRunner
 
     private static async Task StartRabbitMqServiceAsync(RunLogSession log)
     {
-        using var service = new ServiceController("RabbitMQ");
-        await log.WriteAsync("Starting RabbitMQ service.");
-        service.Start();
-        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
+        using var service = new ServiceController(RabbitMqServiceName);
+        service.Refresh();
+        if (service.Status == ServiceControllerStatus.Running)
+        {
+            await log.WriteAsync("RabbitMQ service is already running.");
+            return;
+        }
+
+        await log.WriteAsync($"Starting RabbitMQ service from state {service.Status}.");
+        if (service.Status != ServiceControllerStatus.StartPending)
+        {
+            service.Start();
+        }
+
+        await WaitForServiceStatusAsync(service, ServiceControllerStatus.Running, RabbitMqStartTimeout, log, "starting");
     }
 
     private static async Task<bool> IsRabbitMqRunningAsync()
     {
         try
         {
-            using var service = new ServiceController("RabbitMQ");
+            using var service = new ServiceController(RabbitMqServiceName);
             await Task.Delay(1000);
+            service.Refresh();
             return service.Status == ServiceControllerStatus.Running;
         }
         catch
@@ -615,6 +812,23 @@ public sealed class SupportActionRunner
         }
     }
 
+    private static async Task ExecutePowerShellScriptAsync(string scriptContent, RunLogSession log)
+    {
+        var scriptPath = Path.Combine(Path.GetTempPath(), $"me-acs-support-{Guid.NewGuid():N}.ps1");
+        try
+        {
+            await File.WriteAllTextAsync(scriptPath, scriptContent);
+            await ExecuteProcessAsync(
+                "powershell.exe",
+                $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+                log);
+        }
+        finally
+        {
+            SafeDelete(scriptPath);
+        }
+    }
+
     private static async Task DrainReaderAsync(StreamReader reader, RunLogSession log)
     {
         while (!reader.EndOfStream)
@@ -641,4 +855,90 @@ public sealed class SupportActionRunner
             // Temp cleanup should never crash the action flow.
         }
     }
+
+    private static async Task WaitForRabbitMqServiceToExistAsync(RunLogSession log)
+    {
+        var sw = Stopwatch.StartNew();
+        while (sw.Elapsed < RabbitMqServiceRegistrationTimeout)
+        {
+            if (ServiceController.GetServices()
+                .Any(service => service.ServiceName.Equals(RabbitMqServiceName, StringComparison.OrdinalIgnoreCase)))
+            {
+                await log.WriteAsync("RabbitMQ service registration detected.");
+                return;
+            }
+
+            await Task.Delay(ServicePollInterval);
+        }
+
+        throw new RabbitMqRepairException(
+            $"RabbitMQ service was not registered within {RabbitMqServiceRegistrationTimeout.TotalSeconds:0} seconds after installation.",
+            "RabbitMQ installed, but its Windows service was not registered in time. Reboot the PC and rerun RabbitMQ Repair.");
+    }
+
+    private static async Task WaitForServiceStatusAsync(
+        ServiceController service,
+        ServiceControllerStatus targetStatus,
+        TimeSpan timeout,
+        RunLogSession log,
+        string operation)
+    {
+        var sw = Stopwatch.StartNew();
+        while (sw.Elapsed < timeout)
+        {
+            service.Refresh();
+            if (service.Status == targetStatus)
+            {
+                await log.WriteAsync($"RabbitMQ service reached {targetStatus} after {sw.Elapsed.TotalSeconds:0} seconds.");
+                return;
+            }
+
+            await Task.Delay(ServicePollInterval);
+        }
+
+        service.Refresh();
+        throw new RabbitMqRepairException(
+            $"RabbitMQ service did not reach {targetStatus} within {timeout.TotalSeconds:0} seconds while {operation}. Current state: {service.Status}.",
+            targetStatus == ServiceControllerStatus.Stopped
+                ? "RabbitMQ took too long to stop. Close MagServer, wait a moment, and retry. If it keeps hanging, reboot the PC first."
+                : "RabbitMQ took too long to start. Wait a moment and retry. If it still fails, reboot the PC and rerun RabbitMQ Repair.");
+    }
+
+    private static string? FindRabbitMqUninstallerPath()
+    {
+        foreach (var root in GetProgramFilesRoots())
+        {
+            var uninstallPath = Path.Combine(root, "RabbitMQ Server", "uninstall.exe");
+            if (File.Exists(uninstallPath))
+            {
+                return uninstallPath;
+            }
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> GetProgramFilesRoots()
+    {
+        var roots = new[]
+        {
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+        };
+
+        return roots
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+    }
+}
+
+internal sealed class RabbitMqRepairException : Exception
+{
+    public RabbitMqRepairException(string message, string userMessage)
+        : base(message)
+    {
+        UserMessage = userMessage;
+    }
+
+    public string UserMessage { get; }
 }

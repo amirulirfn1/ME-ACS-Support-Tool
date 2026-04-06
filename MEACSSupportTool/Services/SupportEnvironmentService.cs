@@ -11,16 +11,20 @@ namespace MEACSSupportTool.Services;
 public sealed class SupportEnvironmentService
 {
     private const string DatabaseName = "magetegra";
+    private const int SqlConnectTimeoutSeconds = 2;
 
     public async Task<SupportEnvironmentSnapshot> GetSnapshotAsync()
     {
         var machineName = Environment.MachineName;
         var currentUser = Environment.UserName;
         var isAdministrator = IsAdministrator();
-        var hasInternetAccess = await CheckInternetAsync();
+        var internetTask = CheckInternetAsync();
+        var sqlTask = FindLocalSqlTargetAsync();
         var (rabbitInstalled, rabbitRunning) = GetRabbitMqStatus();
         var ssmsInstalled = IsSsmsInstalled();
-        var sqlTarget = await FindLocalSqlTargetAsync();
+        await Task.WhenAll(internetTask, sqlTask);
+        var hasInternetAccess = internetTask.Result;
+        var sqlTarget = sqlTask.Result;
 
         return new SupportEnvironmentSnapshot
         {
@@ -40,27 +44,21 @@ public sealed class SupportEnvironmentService
 
     public async Task<SqlTarget?> FindLocalSqlTargetAsync()
     {
-        foreach (var candidate in GetSqlCandidates())
+        using var cts = new CancellationTokenSource();
+        var probeTasks = GetSqlCandidates()
+            .Select(candidate => TryConnectToSqlTargetAsync(candidate, cts.Token))
+            .ToList();
+
+        while (probeTasks.Count > 0)
         {
-            try
-            {
-                await using var connection = new SqlConnection(BuildConnectionString(candidate, "master"));
-                await connection.OpenAsync();
+            var completedTask = await Task.WhenAny(probeTasks);
+            probeTasks.Remove(completedTask);
 
-                await using var command = connection.CreateCommand();
-                command.CommandText = "SELECT CASE WHEN DB_ID(@database) IS NULL THEN 0 ELSE 1 END";
-                command.Parameters.AddWithValue("@database", DatabaseName);
-
-                var databaseExists = Convert.ToInt32(await command.ExecuteScalarAsync()) == 1;
-                return new SqlTarget
-                {
-                    DataSource = candidate,
-                    DatabaseExists = databaseExists
-                };
-            }
-            catch
+            var sqlTarget = await completedTask;
+            if (sqlTarget is not null)
             {
-                // Keep trying local instance candidates.
+                cts.Cancel();
+                return sqlTarget;
             }
         }
 
@@ -68,7 +66,7 @@ public sealed class SupportEnvironmentService
     }
 
     public static string BuildConnectionString(string dataSource, string database) =>
-        $"Data Source={dataSource};Initial Catalog={database};Integrated Security=True;TrustServerCertificate=True;Encrypt=False;Connect Timeout=3";
+        $"Data Source={dataSource};Initial Catalog={database};Integrated Security=True;TrustServerCertificate=True;Encrypt=False;Connect Timeout={SqlConnectTimeoutSeconds}";
 
     public bool IsSsmsInstalled()
     {
@@ -190,9 +188,38 @@ public sealed class SupportEnvironmentService
         }
     }
 
+    private static async Task<SqlTarget?> TryConnectToSqlTargetAsync(string candidate, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var connection = new SqlConnection(BuildConnectionString(candidate, "master"));
+            await connection.OpenAsync(cancellationToken);
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT CASE WHEN DB_ID(@database) IS NULL THEN 0 ELSE 1 END";
+            command.Parameters.AddWithValue("@database", DatabaseName);
+
+            var databaseExists = Convert.ToInt32(await command.ExecuteScalarAsync(cancellationToken)) == 1;
+            return new SqlTarget
+            {
+                DataSource = candidate,
+                DatabaseExists = databaseExists
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private static IEnumerable<string> GetSqlCandidates()
     {
-        var candidates = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        var registryInstances = GetRegistrySqlInstances().ToList();
+        var candidates = new List<string>
         {
             ".",
             "localhost",
@@ -202,19 +229,19 @@ public sealed class SupportEnvironmentService
             @"localhost\SQLEXPRESS"
         };
 
-        foreach (var instance in GetRegistrySqlInstances())
+        foreach (var instance in registryInstances)
         {
             if (instance.Equals("MSSQLSERVER", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            candidates.Add($@".\{instance}");
-            candidates.Add($@"{Environment.MachineName}\{instance}");
-            candidates.Add($@"localhost\{instance}");
+            candidates.Insert(0, $@"localhost\{instance}");
+            candidates.Insert(0, $@"{Environment.MachineName}\{instance}");
+            candidates.Insert(0, $@".\{instance}");
         }
 
-        return candidates;
+        return candidates.Distinct(StringComparer.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> GetRegistrySqlInstances()

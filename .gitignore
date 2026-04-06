@@ -2,6 +2,10 @@
 bin/
 obj/
 Release/
+artifacts/
+dist/
+output/
+feed/
 
 # Visual Studio / Rider
 .vs/
