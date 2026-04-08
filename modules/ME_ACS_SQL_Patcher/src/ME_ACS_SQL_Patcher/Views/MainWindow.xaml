@@ -91,16 +91,6 @@
                             Margin="0,0,6,0"
                             Click="BtnImportPatchPack_Click"/>
 
-                    <Button x:Name="btnToggleTheme"
-                            x:FieldModifier="private"
-                            Content="Dark Mode"
-                            AutomationProperties.Name="Toggle color theme"
-                            Style="{StaticResource BtnSecondary}"
-                            MinWidth="86"
-                            Padding="10,8"
-                            Margin="0,0,6,0"
-                            Click="BtnToggleTheme_Click"/>
-
                     <Button x:Name="btnAdminTools"
                             Content="Admin"
                             AutomationProperties.Name="Open admin tools"

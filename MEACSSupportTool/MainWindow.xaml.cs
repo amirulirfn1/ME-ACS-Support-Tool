@@ -54,6 +54,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private string? _updateSummaryOverride;
     private string _busyIndicatorText = "Working...";
     private bool _activityConsoleExpanded;
+    private bool _bottomSectionExpanded;
     private bool _canLaunchSqlPatcher;
     private bool _canOpenSqlPatcherWorkspace;
     private bool _canApplyToolkitUpdate;
@@ -258,6 +259,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    public bool BottomSectionExpanded
+    {
+        get => _bottomSectionExpanded;
+        set => SetField(ref _bottomSectionExpanded, value);
+    }
+
+    public string ThemeToggleLabel => ThemeService.IsDark ? "Light Mode" : "Dark Mode";
+
     public string LogRootDirectory { get; }
 
     public bool IsNotBusy => !_isBusy;
@@ -346,6 +355,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         try
         {
             _settings = await _settingsService.LoadAsync();
+            ThemeService.Apply(_settings.IsDarkTheme);
+            OnPropertyChanged(nameof(ThemeToggleLabel));
             RefreshUpdateDisplay();
             await RefreshStatusAsync();
 
@@ -587,6 +598,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         TryOpenPath(_loggingService.LogsDirectory, "Open Logs Folder");
     }
 
+    private async void ToggleThemeButton_Click(object sender, RoutedEventArgs e)
+    {
+        _settings.IsDarkTheme = !_settings.IsDarkTheme;
+        ThemeService.Apply(_settings.IsDarkTheme);
+        OnPropertyChanged(nameof(ThemeToggleLabel));
+        await _settingsService.SaveAsync(_settings);
+    }
+
     private void OpenCurrentLogButton_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(_currentLogFilePath) || !File.Exists(_currentLogFilePath))
@@ -689,6 +708,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         BusyIndicatorText = $"Running {actionName}...";
         LiveLogText = string.Empty;
         ActivityConsoleExpanded = true;
+        BottomSectionExpanded = true;
 
         var startedAt = DateTime.Now;
         RunLogSession? session = null;

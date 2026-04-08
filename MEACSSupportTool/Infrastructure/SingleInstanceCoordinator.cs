@@ -3,7 +3,7 @@ using System.IO.Pipes;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MagDbPatcher.Infrastructure;
+namespace MEACSSupportTool.Infrastructure;
 
 public sealed class SingleInstanceCoordinator : IDisposable
 {
@@ -15,14 +15,14 @@ public sealed class SingleInstanceCoordinator : IDisposable
     private Task? _listenerTask;
     private bool _disposed;
 
-    public SingleInstanceCoordinator(AppRuntimePaths appPaths, Func<Task> activateExistingInstanceAsync)
+    public SingleInstanceCoordinator(Func<Task> activateExistingInstanceAsync)
     {
-        ArgumentNullException.ThrowIfNull(appPaths);
-        _activateExistingInstanceAsync = activateExistingInstanceAsync ?? throw new ArgumentNullException(nameof(activateExistingInstanceAsync));
+        _activateExistingInstanceAsync = activateExistingInstanceAsync
+            ?? throw new ArgumentNullException(nameof(activateExistingInstanceAsync));
 
-        InstanceKey = BuildInstanceKey(appPaths.RootDirectory);
-        _pipeName = $"ME_ACS_SQL_Patcher_{InstanceKey}";
-        _instanceMutex = new Mutex(false, $@"Local\ME_ACS_SQL_Patcher_{InstanceKey}");
+        var key = BuildInstanceKey();
+        _pipeName = $"ME_ACS_SupportTool_{key}";
+        _instanceMutex = new Mutex(false, $@"Local\ME_ACS_SupportTool_{key}");
 
         try
         {
@@ -36,8 +36,6 @@ public sealed class SingleInstanceCoordinator : IDisposable
     }
 
     public bool IsPrimaryInstance { get; }
-
-    public string InstanceKey { get; }
 
     public void StartListening()
     {
@@ -56,9 +54,8 @@ public sealed class SingleInstanceCoordinator : IDisposable
         try
         {
             using var client = new NamedPipeClientStream(".", _pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
-            using var timeoutCancellation = new CancellationTokenSource(timeout);
-
-            await client.ConnectAsync(timeoutCancellation.Token);
+            using var cts = new CancellationTokenSource(timeout);
+            await client.ConnectAsync(cts.Token);
             await using var writer = new StreamWriter(client, Encoding.UTF8, 1024, leaveOpen: true) { AutoFlush = true };
             await writer.WriteLineAsync(ActivationMessage);
             return true;
@@ -102,16 +99,13 @@ public sealed class SingleInstanceCoordinator : IDisposable
         _instanceMutex.Dispose();
     }
 
-    public static string BuildInstanceKey(string rootDirectory)
+    private static string BuildInstanceKey()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(rootDirectory);
-
-        var normalized = Path.GetFullPath(rootDirectory)
-            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            .ToUpperInvariant();
-
+        // Key is based on the exe path so each install location is its own instance.
+        var exePath = Environment.ProcessPath ?? AppContext.BaseDirectory;
+        var normalized = Path.GetFullPath(exePath).ToUpperInvariant();
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(normalized));
-        return Convert.ToHexString(hash, 0, 16);
+        return Convert.ToHexString(hash, 0, 8);
     }
 
     private async Task ListenForActivationAsync(CancellationToken cancellationToken)
@@ -129,8 +123,9 @@ public sealed class SingleInstanceCoordinator : IDisposable
 
                 await server.WaitForConnectionAsync(cancellationToken);
 
-                using var reader = new StreamReader(server, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
-                var message = await reader.ReadLineAsync();
+                using var reader = new StreamReader(server, Encoding.UTF8,
+                    detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+                var message = await reader.ReadLineAsync(cancellationToken);
                 if (string.Equals(message, ActivationMessage, StringComparison.Ordinal))
                     await _activateExistingInstanceAsync();
             }
@@ -142,10 +137,10 @@ public sealed class SingleInstanceCoordinator : IDisposable
             {
                 break;
             }
-            catch (Exception ex)
+            catch
             {
-                DiagnosticsLog.Warning("single-instance-listener", "Failed to process a secondary launch signal.", ex);
-                await Task.Delay(250, cancellationToken);
+                // Keep listening after transient pipe errors.
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             }
         }
     }

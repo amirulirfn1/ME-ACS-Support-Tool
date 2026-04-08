@@ -17,10 +17,26 @@ $installerDir = Join-Path $distDir  "installer"
 $feedDir      = Join-Path $repoRoot "feed"
 $iconPath     = Join-Path $repoRoot "src\ME_ACS_SQL_Patcher\Assets\me-acs-patcher.ico"
 
-# Read version from csproj
+# Read version from csproj, resolving $(PropName) via parent Directory.Build.props if needed
 [xml]$proj = Get-Content $projectPath
 $version = @($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1)[0].Version
 if ([string]::IsNullOrWhiteSpace($version)) { throw "Could not read version from $projectPath" }
+
+if ($version -match '^\$\((\w+)\)$') {
+    $propName = $Matches[1]
+    $searchDir = Split-Path -Parent $projectPath
+    $root = [System.IO.Path]::GetPathRoot($searchDir)
+    while ($searchDir -ne $root) {
+        $propsFile = Join-Path $searchDir "Directory.Build.props"
+        if (Test-Path $propsFile) {
+            [xml]$props = Get-Content $propsFile
+            $resolved = @($props.Project.PropertyGroup | ForEach-Object { $_.$propName } | Where-Object { $_ }) | Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace($resolved)) { $version = $resolved; break }
+        }
+        $searchDir = Split-Path -Parent $searchDir
+    }
+}
+if ([string]::IsNullOrWhiteSpace($version) -or $version -match '^\$\(') { throw "Could not resolve version '$version' from $projectPath" }
 
 function Get-PatchCatalogMetadata([string]$patchesRoot) {
     if (-not (Test-Path $patchesRoot)) {

@@ -19,14 +19,6 @@ namespace MagDbPatcher;
 
 public partial class MainWindow
 {
-    private async void BtnToggleTheme_Click(object sender, RoutedEventArgs e)
-    {
-        _settings.IsDarkTheme = !_settings.IsDarkTheme;
-        ThemeService.Apply(_settings.IsDarkTheme);
-        btnToggleTheme.Content = _settings.IsDarkTheme ? "Light Mode" : "Dark Mode";
-        await PersistSettingsAsync();
-    }
-
     private void BtnAdminTools_Click(object sender, RoutedEventArgs e)
     {
         if (_versionService == null)

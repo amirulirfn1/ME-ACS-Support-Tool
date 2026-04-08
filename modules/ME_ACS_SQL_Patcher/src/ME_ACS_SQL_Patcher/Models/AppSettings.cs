@@ -20,5 +20,5 @@ public class AppSettings
     public SqlAuthMode SqlAuthMode { get; set; } = SqlAuthMode.Windows;
 
     public string? SqlUsername { get; set; }
-    public bool IsDarkTheme { get; set; }
+    public bool IsDarkTheme { get; set; } = false;
 }

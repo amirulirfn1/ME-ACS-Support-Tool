@@ -45,7 +45,7 @@
     {
       "id": "3.10",
       "name": "3.10",
-      "upgradesTo": null,
+      "upgradesTo": "4.00",
       "order": 8
     },
     {
@@ -183,7 +183,7 @@
     {
       "id": "6.5",
       "name": "6.5",
-      "upgradesTo": "7.0",
+      "upgradesTo": "7.2.4",
       "order": 31
     },
     {
@@ -280,6 +280,13 @@
     },
     {
       "from": "2.10",
+      "to": "4.00",
+      "scripts": [
+        "4.00/SQL_Upgrade4_00from2_10.sql"
+      ]
+    },
+    {
+      "from": "3.10",
       "to": "4.00",
       "scripts": [
         "4.00/SQL_Upgrade4_00from2_10.sql"

@@ -74,6 +74,12 @@
                             IsEnabled="{Binding IsNotRefreshing}"
                             Style="{StaticResource BtnSecondary}"
                             Content="Check Updates" />
+                    <Button Margin="0,0,8,0"
+                            Click="ToggleThemeButton_Click"
+                            Style="{StaticResource BtnSecondary}"
+                            Padding="10,8"
+                            FontSize="12"
+                            Content="{Binding ThemeToggleLabel}" />
                     <Button Click="OpenLogsFolderButton_Click"
                             Style="{StaticResource BtnSecondary}"
                             Padding="10,8"
@@ -428,11 +434,15 @@
                         </Expander.Header>
                         <Border Style="{StaticResource Card}" Padding="16" Margin="0,6,0,0">
                             <StackPanel>
-                                <TextBlock Text="Update source" Style="{StaticResource EyebrowText}" />
+                                <TextBlock Text="Update server" Style="{StaticResource EyebrowText}" />
                                 <TextBlock Margin="0,4,0,0"
                                            Text="{Binding UpdateFeedPathText}"
                                            Style="{StaticResource FieldLabelText}"
                                            TextWrapping="Wrap" />
+                                <TextBlock Margin="0,3,0,0"
+                                           Text="e.g. http://192.168.0.10:39000"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextMuted}" />
                                 <TextBlock Margin="0,10,0,0" Text="Last check" Style="{StaticResource EyebrowText}" />
                                 <TextBlock Margin="0,4,0,0"
                                            Text="{Binding LastUpdateCheckText}"
@@ -442,7 +452,7 @@
                                     <Button Margin="0,0,8,8"
                                             Click="SetUpdateFeedUrlButton_Click"
                                             Style="{StaticResource BtnSecondary}"
-                                            Content="Set Feed URL" />
+                                            Content="Set Server IP / URL" />
                                     <Button Margin="0,0,8,8"
                                             Click="ConfigureUpdateFeedButton_Click"
                                             Style="{StaticResource BtnSecondary}"
@@ -460,69 +470,96 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- Bottom: Status banner + activity log | Recent runs -->
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.3*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- Status banner + live log -->
-            <Border Grid.Column="0" Style="{StaticResource NextActionBanner}" Padding="14,12" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="{Binding StatusBanner}"
-                               FontSize="13"
+        <!-- Bottom: Status banner + activity log | Recent runs (collapsible) -->
+        <Expander Grid.Row="4"
+                  IsExpanded="{Binding BottomSectionExpanded, Mode=TwoWay}"
+                  Margin="0,4,0,0">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Activity &amp; History"
+                               FontSize="12"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimary}"
-                               TextWrapping="Wrap" />
-                    <StackPanel Margin="0,10,0,0"
-                                Orientation="Vertical"
-                                Visibility="{Binding BusyIndicatorVisibility}">
-                        <TextBlock Text="{Binding BusyIndicatorText}"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextSecondary}" />
-                        <ProgressBar Margin="0,6,0,0"
-                                     Height="6"
-                                     IsIndeterminate="True" />
-                    </StackPanel>
-                    <TextBox Margin="0,10,0,0"
-                             Height="100"
-                             Style="{StaticResource ReadOnlyConsoleTextBox}"
-                             Text="{Binding LiveLogText, Mode=OneWay}"
-                             Visibility="{Binding ActivityConsoleVisibility}" />
-                    <Button Margin="0,8,0,0"
-                            HorizontalAlignment="Left"
-                            Click="OpenCurrentLogButton_Click"
-                            IsEnabled="{Binding CanOpenCurrentLog}"
-                            Style="{StaticResource BtnSecondary}"
-                            Content="Open Log File"
-                            Visibility="{Binding ActivityConsoleVisibility}" />
+                               Foreground="{DynamicResource TextMuted}"
+                               VerticalAlignment="Center" />
+                    <Border Background="{DynamicResource SurfaceSubtle}"
+                            BorderBrush="{DynamicResource BorderColor}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="6,2"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding StatusBanner}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   MaxWidth="500"
+                                   TextTrimming="CharacterEllipsis" />
+                    </Border>
                 </StackPanel>
-            </Border>
+            </Expander.Header>
 
-            <!-- Recent runs -->
-            <Border Grid.Column="1" Style="{StaticResource Card}" Padding="14" Margin="8,0,0,0">
-                <StackPanel>
-                    <TextBlock Text="Recent runs" Style="{StaticResource SectionHeaderText}" />
-                    <DataGrid Margin="0,10,0,0"
-                              MaxHeight="160"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              CanUserDeleteRows="False"
-                              IsReadOnly="True"
-                              ItemsSource="{Binding HistoryItems}"
-                              ToolTip="Double-click a row to open its log file"
-                              MouseDoubleClick="HistoryGrid_MouseDoubleClick">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding StartedAt}" Header="Started" Width="140" />
-                            <DataGridTextColumn Binding="{Binding ActionName}" Header="Action" Width="145" />
-                            <DataGridTextColumn Binding="{Binding Outcome}" Header="Outcome" Width="90" />
-                            <DataGridTextColumn Binding="{Binding Summary}" Header="Summary" Width="*" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
-            </Border>
-        </Grid>
+            <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Status banner + live log -->
+                <Border Grid.Column="0" Style="{StaticResource NextActionBanner}" Padding="14,12" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="{Binding StatusBanner}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   TextWrapping="Wrap" />
+                        <StackPanel Margin="0,10,0,0"
+                                    Orientation="Vertical"
+                                    Visibility="{Binding BusyIndicatorVisibility}">
+                            <TextBlock Text="{Binding BusyIndicatorText}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                            <ProgressBar Margin="0,6,0,0"
+                                         Height="6"
+                                         IsIndeterminate="True" />
+                        </StackPanel>
+                        <TextBox Margin="0,10,0,0"
+                                 Height="100"
+                                 Style="{StaticResource ReadOnlyConsoleTextBox}"
+                                 Text="{Binding LiveLogText, Mode=OneWay}"
+                                 Visibility="{Binding ActivityConsoleVisibility}" />
+                        <Button Margin="0,8,0,0"
+                                HorizontalAlignment="Left"
+                                Click="OpenCurrentLogButton_Click"
+                                IsEnabled="{Binding CanOpenCurrentLog}"
+                                Style="{StaticResource BtnSecondary}"
+                                Content="Open Log File"
+                                Visibility="{Binding ActivityConsoleVisibility}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Recent runs -->
+                <Border Grid.Column="1" Style="{StaticResource Card}" Padding="14" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Recent runs" Style="{StaticResource SectionHeaderText}" />
+                        <DataGrid Margin="0,10,0,0"
+                                  MaxHeight="160"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  ItemsSource="{Binding HistoryItems}"
+                                  ToolTip="Double-click a row to open its log file"
+                                  MouseDoubleClick="HistoryGrid_MouseDoubleClick">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding StartedAt}" Header="Started" Width="140" />
+                                <DataGridTextColumn Binding="{Binding ActionName}" Header="Action" Width="145" />
+                                <DataGridTextColumn Binding="{Binding Outcome}" Header="Outcome" Width="90" />
+                                <DataGridTextColumn Binding="{Binding Summary}" Header="Summary" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Expander>
     </Grid>
 </Window>

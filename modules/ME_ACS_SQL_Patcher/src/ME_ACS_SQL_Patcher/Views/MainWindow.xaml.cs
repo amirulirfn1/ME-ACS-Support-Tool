@@ -219,7 +219,6 @@ public partial class MainWindow : Window
         RefreshPatchLibrarySummary(snapshot.LastImportedPack);
 
         ThemeService.Apply(_settings.IsDarkTheme);
-        btnToggleTheme.Content = _settings.IsDarkTheme ? "Light Mode" : "Dark Mode";
     }
 
     private string GetCurrentPatchesFolder()
